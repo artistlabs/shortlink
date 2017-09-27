@@ -1,0 +1,6 @@
+services:
+    app.repository.links:
+        class: AppBundle\Repository\LinksRepository
+        factory: ["@doctrine.orm.default_entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Links

@@ -2,20 +2,75 @@
 
 namespace AppBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use AppBundle\Entity\LinksInterface;
+use AppBundle\exception\AddLinkException;
+use AppBundle\Repository\LinksRepositoryInterface;
+use AppBundle\service\LinksService;
+use AppBundle\service\LinksServiceInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Webmozart\Assert\Assert;
 
 class DefaultController extends Controller
 {
     /**
-     * @Route("/", name="homepage")
+     * @Route(
+     *     path="/",
+     *     name="home"
+     * )
      */
-    public function indexAction(Request $request)
+    public function indexAction()
     {
-        // replace this example code with whatever you need
-        return $this->render('default/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
+        return $this->render('AppBundle:Default:index.html.twig');
+    }
+
+    /**
+     * @Route(
+     *     path="/add",
+     *     name="add_link",
+     *     defaults={"_format": "json"},
+     * )
+     * @Method("POST")
+     */
+    public function addAction(Request $request) {
+        /**
+         * @var LinksServiceInterface $service
+         */
+
+        $url = $request->get('url', null);
+        $service = $this->get(LinksService::class);
+        try {
+            Assert::notNull($url);
+            $hash = $service->addLink($url);
+        } catch (\InvalidArgumentException $exception) {
+            //todo переделать обработка ошибок
+            throw new AddLinkException('invalid url addrress', 400);
+        }
+
+        return $this->json([
+            'url'  => $this->generateUrl('link', ['hash' => $hash], UrlGeneratorInterface::ABSOLUTE_URL)
         ]);
+    }
+
+    /**
+     * @Route(
+     *     path="/{hash}",
+     *     name="link",
+     *     requirements={"hash": "[\d|\w]+"}
+     * )
+     */
+    public function linkAction($hash) {
+        /**
+         * @var LinksRepositoryInterface $repository
+         */
+        $repository = $this->get('app.repository.links');
+        $link = $repository->findOneByHash($hash);
+
+        Assert::isInstanceOf($link, LinksInterface::class);
+
+        return $this->redirect($link->getUrl(), 301);
     }
 }

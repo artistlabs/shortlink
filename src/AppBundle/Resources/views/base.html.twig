@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {% block stylesheets %}{% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+        {% block javascripts %}
+            <script src="{{ asset('/bundles/app/js/zepto.min.js') }}"></script>
+            <script src="{{ asset('/bundles/app/js/index.js') }}"></script>
+            <script>
+                $('body').ready(function(event) {
+                    shortLink = new ShortLink({
+                        url: '{{ path("add_link") }}',
+                        btnSelector: '#app_btn_add',
+                        inputSelector: '#app_url',
+                        labelSelector: '#app_response_label'
+                    });
+                    shortLink.init();
+                });
+            </script>
+        {% endblock %}
+    </body>
+</html>
