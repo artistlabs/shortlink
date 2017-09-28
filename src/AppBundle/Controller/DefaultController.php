@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\LinksInterface;
 use AppBundle\exception\AddLinkException;
+use AppBundle\exception\ValidateException;
 use AppBundle\Repository\LinksRepositoryInterface;
 use AppBundle\service\LinksService;
 use AppBundle\service\LinksServiceInterface;
@@ -48,6 +49,8 @@ class DefaultController extends Controller
         } catch (\InvalidArgumentException $exception) {
             //todo переделать обработка ошибок
             throw new AddLinkException('invalid url addrress', 400);
+        } catch (ValidateException $exception) {
+            throw new AddLinkException($exception->getMessage());
         }
 
         return $this->json([

@@ -10,14 +10,16 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
-//use Gedmo\Mapping\Annotation as Gedmo
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Class Entity
  * @package AppBundle
  *
  * @ORM\Entity(repositoryClass="AppBundle\Repository\LinksRepository")
+ * @UniqueEntity(
+ *     fields={"hash"}
+ * )
  * @ORM\Table(
  *     name="links",
  *     indexes={
@@ -45,7 +47,6 @@ class Links implements LinksInterface
 
     /**
      * @ORM\Column(type="string", length=32, nullable=false)
-     * @
      */
     private $hash;
 
