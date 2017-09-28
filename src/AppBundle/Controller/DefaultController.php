@@ -48,9 +48,9 @@ class DefaultController extends Controller
             $hash = $service->addLink($url);
         } catch (\InvalidArgumentException $exception) {
             //todo переделать обработка ошибок
-            throw new AddLinkException('invalid url addrress', 400);
+            return $this->json('invalid url address', 400);
         } catch (ValidateException $exception) {
-            throw new AddLinkException($exception->getMessage());
+            return $this->json($exception->getMessage(), 400);
         }
 
         return $this->json([

@@ -11,6 +11,7 @@ ShortLink.prototype.init = function () {
         $.ajax({
             type: 'POST',
             url: self.addUrl,
+            dataType: 'json',
             data: {
                 url: $(self.inputSelector).val()
             }
@@ -22,7 +23,7 @@ ShortLink.prototype.init = function () {
 
             },
             error: function (data, status) {
-                $(self.labelSelector).html(data.statusText);
+                $(self.labelSelector).html(data.response);
             }
         })
     });
