@@ -29,3 +29,4 @@ services:
             $linksRepository: '@app.repository.links'
             $entityManager: '@doctrine.orm.entity_manager'
             $validator: '@validator'
+            $converter: '@app.num_converter'

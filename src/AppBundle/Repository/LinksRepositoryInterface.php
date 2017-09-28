@@ -17,4 +17,6 @@ interface LinksRepositoryInterface
     public function findOneByUrl(string $url): ?LinksInterface;
 
     public function findLast(): ?LinksInterface;
+
+    public function findLastId(): ?int;
 }

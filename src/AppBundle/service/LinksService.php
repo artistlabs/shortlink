@@ -12,6 +12,7 @@ use AppBundle\exception\ValidateException;
 use AppBundle\Repository\LinksRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Fwolf\Util\BaseConverter\BaseConverter;
+use Fwolf\Util\BaseConverter\BaseConverterInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webmozart\Assert\Assert;
 
@@ -21,16 +22,19 @@ class LinksService implements LinksServiceInterface
     private $linksRepository;
     private $entityManager;
     private $validator;
+    private $numConverter;
 
     public function __construct(
         LinksRepositoryInterface $linksRepository,
         EntityManagerInterface $entityManager,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        BaseConverterInterface $converter
     )
     {
         $this->linksRepository = $linksRepository;
         $this->entityManager = $entityManager;
         $this->validator = $validator;
+        $this->numConverter = $converter;
     }
 
     public function addLink(string $url): string
@@ -41,14 +45,11 @@ class LinksService implements LinksServiceInterface
             return $link->getHash();
         }
 
-        //todo вынести в конструктор
-        $converter = BaseConverter::getInstance();
-
-        $last_link = $this->linksRepository->findLast();
-        $id = $last_link? ($last_link->getId() + 1)  : 1;
+        $last_id = $this->linksRepository->findLastId();
+        $last_id = $last_id? ($last_id + 1)  : 1;
         $link = new Links();
         $link->setUrl($url);
-        $link->setHash($converter->convert($id, 10, 36));
+        $link->setHash($this->numConverter->convert($last_id, 10, 36));
         $link->setCreatedAt(new \DateTime());
 
         $result = $this->validator->validate($link);

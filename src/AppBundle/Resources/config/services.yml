@@ -4,3 +4,7 @@ services:
         factory: ["@doctrine.orm.default_entity_manager", getRepository]
         arguments:
             - AppBundle\Entity\Links
+    app.num_converter:
+        class: 'Fwolf\Util\BaseConverter\BaseConverter'
+        factory: ['Fwolf\Util\BaseConverter\BaseConverter', getInstance]
+

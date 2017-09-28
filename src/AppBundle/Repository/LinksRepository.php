@@ -34,9 +34,21 @@ class LinksRepository extends \Doctrine\ORM\EntityRepository implements LinksRep
     public function findLast(): ?LinksInterface
     {
         return $this->createQueryBuilder('links')
+            ->where()
             ->addOrderBy('links.id', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function findLastId(): ?int
+    {
+        $result = $this->createQueryBuilder('links')
+            ->select('MAX(links.id) as id')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $result? intval($result) : null;
+    }
+
 }
